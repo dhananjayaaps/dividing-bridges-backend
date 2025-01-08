@@ -234,4 +234,40 @@ public class AuthController {
     public ResponseEntity<?> deleteResearcher(@PathVariable("email") String email) {
         return authService.deleteResearcher(email);
     }
+
+    @PostMapping(path = "/schools")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> addSchool(@RequestPart("name") String name, @RequestPart("district") String district) {
+        return authService.addSchool(name, district);
+    }
+
+    @GetMapping(path = "/schools/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getSchool(@PathVariable("id") String id) {
+        return authService.getSchool(id);
+    }
+
+    @GetMapping(path = "/schools")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getSchoolsByDistrict(@RequestParam(value = "district", required = false) String district) {
+        return authService.getSchoolsByDistrict(district);
+    }
+
+    @PutMapping(path = "/schools/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> updateSchool(@PathVariable("id") String id, @RequestPart("name") String name) {
+        return authService.updateSchool(id, name);
+    }
+
+    @DeleteMapping(path = "/schools/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> deleteSchool(@PathVariable("id") String id) {
+        return authService.deleteSchool(id);
+    }
+
+    @GetMapping(path = "/schools/district-school-hierarchy")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getDistrictSchoolHierarchy() {
+        return authService.getDistrictSchoolHierarchy();
+    }
 }

@@ -5,10 +5,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.apache.poi.ss.usermodel.*;
 import org.penpal.auth.dto.*;
 import org.penpal.auth.model.*;
-import org.penpal.auth.repository.ResearcherRepository;
-import org.penpal.auth.repository.StudentRepository;
-import org.penpal.auth.repository.TeacherRepository;
-import org.penpal.auth.repository.TranslatorRepository;
+import org.penpal.auth.repository.*;
 import org.penpal.auth.tokens.JwtGenerator;
 import org.penpal.auth.tokens.TempPasswordGenerator;
 import org.penpal.auth.validators.JwtValidator;
@@ -57,6 +54,8 @@ public class AuthService {
     private EmailSendingService emailSendingService;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private SchoolRepository schoolRepository;
 
     public AuthService(EmailValidator emailValidator) {
         this.emailValidator = emailValidator;
@@ -881,5 +880,78 @@ public class AuthService {
             throw new RuntimeException(e);
         }
         return rows;
+    }
+
+    public ResponseEntity<?> addSchool(String name, String district) {
+        School school = new School();
+        school.setName(name);
+        school.setDistrict(district);
+        schoolRepository.save(school);
+        return new ResponseEntity<>(new APIResponse("School added successfully!"), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<?> getSchool(String id) {
+        Optional<School> school = schoolRepository.findById(id);
+        if (school.isPresent()) {
+            return new ResponseEntity<>(school.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new APIResponse("School not found!"), HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<?> updateSchool(String id, String updatedName) {
+        Optional<School> school = schoolRepository.findById(id);
+        if (school.isPresent()) {
+            school.get().setName(updatedName);
+            schoolRepository.save(school.get());
+            return new ResponseEntity<>(new APIResponse("School updated successfully!"), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new APIResponse("School not found!"), HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<?> deleteSchool(String id) {
+        Optional<School> school = schoolRepository.findById(id);
+        if (school.isPresent()) {
+            schoolRepository.delete(school.get());
+            return new ResponseEntity<>(new APIResponse("School deleted successfully!"), HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(new APIResponse("School not found!"), HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<?> getSchoolsByDistrict(String district) {
+        Optional<List<School>> schools = schoolRepository.findByDistrict(district);
+        if (schools.isPresent()) {
+            return new ResponseEntity<>(schools.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new APIResponse("District not found!"), HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<?> getDistrictSchoolHierarchy() {
+        List<School> schools = schoolRepository.findAll();
+
+        Map<String, List<School>> districtSchoolMap = schools.stream()
+                .collect(Collectors.groupingBy(School::getDistrict));
+
+        List<DistrictSchoolHierarchy> districtHierarchy = districtSchoolMap.entrySet().stream()
+                .map(entry -> {
+                    String district = entry.getKey();
+                    List<School> schoolList = entry.getValue();
+
+                    DistrictSchoolHierarchy districtData = new DistrictSchoolHierarchy();
+                    districtData.setDistrict(district);
+
+                    List<DistrictSchoolHierarchy.SchoolData> schoolDataList = schoolList.stream()
+                            .map(school -> {
+                                DistrictSchoolHierarchy.SchoolData schoolData = new DistrictSchoolHierarchy.SchoolData();
+                                schoolData.setSchoolName(school.getName());
+                                return schoolData;
+                            })
+                            .collect(Collectors.toList());
+
+                    districtData.setSchools(schoolDataList);
+                    return districtData;
+                })
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(districtHierarchy, HttpStatus.OK);
     }
 }
