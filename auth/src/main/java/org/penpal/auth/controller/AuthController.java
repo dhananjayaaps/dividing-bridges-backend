@@ -44,10 +44,11 @@ public class AuthController {
         return authService.changePassword(userEmail, resetPasswordPayload);
     }
 
-    @GetMapping(path ="/validateToken")
+    @PutMapping(path ="/validate-token/{userEmail}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> validateToken(@RequestBody String token) {
-        return authService.validateToken(token);
+    public ResponseEntity<?> validateToken(@PathVariable("userEmail") String userEmail,
+                                           @RequestParam("userRole") String userRole) {
+        return authService.validateToken(userEmail, userRole);
     }
 
     @PostMapping(path = "/students")

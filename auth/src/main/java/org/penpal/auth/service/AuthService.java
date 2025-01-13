@@ -73,6 +73,8 @@ public class AuthService {
                     student.get().getPassword() != null &&
                     new BCryptPasswordEncoder().matches(request.getUserPassword(), student.get().getPassword())) {
                 String userRole = student.get().getUserRole().toString();
+                student.get().setResetToken(null);
+                studentRepository.save(student.get());
                 var token = jwtGenerator.generateToken(request.getUserEmail(), userRole);
                 return new ResponseEntity<>("{\"token\":\"" + token + "\",\"userRole\":\"" + userRole + "\"}", HttpStatus.OK);
             }
@@ -81,6 +83,8 @@ public class AuthService {
             Optional<Teacher> teacher = teacherRepository.findByUserEmail(request.getUserEmail());
             if (teacher.isPresent() && teacher.get().getUserPassword() != null && new BCryptPasswordEncoder().matches(request.getUserPassword(), teacher.get().getUserPassword())) {
                 String userRole = teacher.get().getUserRole().toString();
+                teacher.get().setResetToken(null);
+                teacherRepository.save(teacher.get());
                 var token = jwtGenerator.generateToken(request.getUserEmail(), userRole);
                 return new ResponseEntity<>("{\"token\":\"" + token + "\",\"userRole\":\"" + userRole + "\"}", HttpStatus.OK);
             }
@@ -89,6 +93,8 @@ public class AuthService {
             Optional<Translator> translator = translatorRepository.findByUserEmail(request.getUserEmail());
             if (translator.isPresent() && translator.get().getUserPassword() != null && new BCryptPasswordEncoder().matches(request.getUserPassword(), translator.get().getUserPassword())) {
                 String userRole = translator.get().getUserRole().toString();
+                translator.get().setResetToken(null);
+                translatorRepository.save(translator.get());
                 var token = jwtGenerator.generateToken(request.getUserEmail(), userRole);
                 return new ResponseEntity<>("{\"token\":\"" + token + "\",\"userRole\":\"" + userRole + "\"}", HttpStatus.OK);
             }
@@ -97,6 +103,8 @@ public class AuthService {
             Optional<Researcher> researcher = researcherRepository.findByUserEmail(request.getUserEmail());
             if (researcher.isPresent() && researcher.get().getUserPassword() != null && new BCryptPasswordEncoder().matches(request.getUserPassword(), researcher.get().getUserPassword())) {
                 String userRole = researcher.get().getUserRole().toString();
+                researcher.get().setResetToken(null);
+                researcherRepository.save(researcher.get());
                 var token = jwtGenerator.generateToken(request.getUserEmail(), userRole);
                 return new ResponseEntity<>("{\"token\":\"" + token + "\",\"userRole\":\"" + userRole + "\"}", HttpStatus.OK);
             }
@@ -106,12 +114,78 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<?> validateToken(String token) {
-        Boolean isValid = jwtValidator.validateToken(token);
-        if (isValid) {
-            return new ResponseEntity<>("Token is valid!", HttpStatus.OK);
+    public ResponseEntity<?> validateToken(String email, String userRole) {
+        if (userRole.equals(UserRole.STUDENT.toString())) {
+            Optional<Student> student = studentRepository.findByUserEmail(email);
+            if (student.isPresent()) {
+                if(student.get().getResetToken() != null) {
+                    boolean validate = jwtValidator.validateToken(student.get().getResetToken());
+                    if(!validate) {
+                        return new ResponseEntity<>("You are not authorized to do this. Please do the forgot password process again!", HttpStatus.UNAUTHORIZED);
+                    } else {
+                        student.get().setResetToken(null);
+                        studentRepository.save(student.get());
+                        return new ResponseEntity<>("Token is validated", HttpStatus.OK);
+                    }
+                }
+                return new ResponseEntity<>("You have not requested a password change", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Student not found with the provided email!", HttpStatus.NOT_FOUND);
+            }
+        } else if (userRole.equals(UserRole.TEACHER.toString())) {
+            Optional<Teacher> teacher = teacherRepository.findByUserEmail(email);
+            if (teacher.isPresent()) {
+                if(teacher.get().getResetToken() != null) {
+                    boolean validate = jwtValidator.validateToken(teacher.get().getResetToken());
+                    if(!validate) {
+                        return new ResponseEntity<>("You are not authorized to do this. Please do the forgot password process again!", HttpStatus.UNAUTHORIZED);
+                    } else {
+                        teacher.get().setResetToken(null);
+                        teacherRepository.save(teacher.get());
+                        return new ResponseEntity<>("Token is validated", HttpStatus.OK);
+                    }
+                }
+                return new ResponseEntity<>("You have not requested a password change", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Teacher not found with the provided email!", HttpStatus.NOT_FOUND);
+            }
+        } else if (userRole.equals(UserRole.TRANSLATOR.toString())) {
+            Optional<Translator> translator = translatorRepository.findByUserEmail(email);
+            if (translator.isPresent()) {
+                if(translator.get().getResetToken() != null) {
+                    boolean validate = jwtValidator.validateToken(translator.get().getResetToken());
+                    if(!validate) {
+                        return new ResponseEntity<>("You are not authorized to do this. Please do the forgot password process again!", HttpStatus.UNAUTHORIZED);
+                    } else {
+                        translator.get().setResetToken(null);
+                        translatorRepository.save(translator.get());
+                        return new ResponseEntity<>("Token is validated", HttpStatus.OK);
+                    }
+                }
+                return new ResponseEntity<>("You have not requested a password change", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Translator not found with the provided email!", HttpStatus.NOT_FOUND);
+            }
+        } else if (userRole.equals(UserRole.RESEARCHER.toString())) {
+            Optional<Researcher> researcher = researcherRepository.findByUserEmail(email);
+            if (researcher.isPresent()) {
+                if(researcher.get().getResetToken() != null) {
+                    boolean validate = jwtValidator.validateToken(researcher.get().getResetToken());
+                    if(!validate) {
+                        return new ResponseEntity<>("You are not authorized to do this. Please do the forgot password process again!", HttpStatus.UNAUTHORIZED);
+                    } else {
+                        researcher.get().setResetToken(null);
+                        researcherRepository.save(researcher.get());
+                        return new ResponseEntity<>("Token is validated", HttpStatus.OK);
+                    }
+                }
+                return new ResponseEntity<>("You have not requested a password change", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Researcher not found with the provided email!", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>("Invalid user role!", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Token is invalid!", HttpStatus.UNAUTHORIZED);
     }
 
     public ResponseEntity<?> forgotPassword(String email, String userRole) {
@@ -169,14 +243,6 @@ public class AuthService {
         if (resetPasswordPayload.getUserRole().equals(UserRole.STUDENT.toString())) {
             Optional<Student> student = studentRepository.findByUserEmail(email);
             if (student.isPresent()) {
-                if(student.get().getResetToken() != null) {
-                    ResponseEntity<?> validate = validateToken(student.get().getResetToken());
-                    if(validate.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                        return new ResponseEntity<>("You are not authorized to do this. Try again!", HttpStatus.UNAUTHORIZED);
-                    } else if (validate.getStatusCode() == HttpStatus.OK) {
-                        student.get().setResetToken(null);
-                    }
-                }
                 student.get().setPassword(bCryptPasswordEncoder.encode(resetPasswordPayload.getNewPassword()));
                 studentRepository.save(student.get());
                 return new ResponseEntity<>("Password reset successful!", HttpStatus.NO_CONTENT);
@@ -186,14 +252,6 @@ public class AuthService {
         } else if (resetPasswordPayload.getUserRole().equals(UserRole.TEACHER.toString())) {
             Optional<Teacher> teacher = teacherRepository.findByUserEmail(email);
             if (teacher.isPresent()) {
-                if(teacher.get().getResetToken() != null) {
-                    ResponseEntity<?> validate = validateToken(teacher.get().getResetToken());
-                    if(validate.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                        return new ResponseEntity<>("You are not authorized to do this. Try again!", HttpStatus.UNAUTHORIZED);
-                    } else if (validate.getStatusCode() == HttpStatus.OK) {
-                        teacher.get().setResetToken(null);
-                    }
-                }
                 teacher.get().setUserPassword(bCryptPasswordEncoder.encode(resetPasswordPayload.getNewPassword()));
                 teacherRepository.save(teacher.get());
                 return new ResponseEntity<>("Password reset successful!", HttpStatus.NO_CONTENT);
@@ -203,14 +261,6 @@ public class AuthService {
         } else if (resetPasswordPayload.getUserRole().equals(UserRole.TRANSLATOR.toString())) {
             Optional<Translator> translator = translatorRepository.findByUserEmail(email);
             if (translator.isPresent()) {
-                if(translator.get().getResetToken() != null) {
-                    ResponseEntity<?> validate = validateToken(translator.get().getResetToken());
-                    if(validate.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                        return new ResponseEntity<>("You are not authorized to do this. Try again!", HttpStatus.UNAUTHORIZED);
-                    } else if (validate.getStatusCode() == HttpStatus.OK) {
-                        translator.get().setResetToken(null);
-                    }
-                }
                 translator.get().setUserPassword(bCryptPasswordEncoder.encode(resetPasswordPayload.getNewPassword()));
                 translatorRepository.save(translator.get());
                 return new ResponseEntity<>("Password reset successful!", HttpStatus.NO_CONTENT);
@@ -220,14 +270,6 @@ public class AuthService {
         } else if (resetPasswordPayload.getUserRole().equals(UserRole.RESEARCHER.toString())) {
             Optional<Researcher> researcher = researcherRepository.findByUserEmail(email);
             if (researcher.isPresent()) {
-                if(researcher.get().getResetToken() != null) {
-                    ResponseEntity<?> validate = validateToken(researcher.get().getResetToken());
-                    if(validate.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                        return new ResponseEntity<>("You are not authorized to do this. Try again!", HttpStatus.UNAUTHORIZED);
-                    } else if (validate.getStatusCode() == HttpStatus.OK) {
-                        researcher.get().setResetToken(null);
-                    }
-                }
                 researcher.get().setUserPassword(bCryptPasswordEncoder.encode(resetPasswordPayload.getNewPassword()));
                 researcherRepository.save(researcher.get());
                 return new ResponseEntity<>("Password reset successful!", HttpStatus.NO_CONTENT);
@@ -359,6 +401,8 @@ public class AuthService {
     public ResponseEntity<?> getStudent(String email) {
         Optional<Student> student = studentRepository.findByUserEmail(email);
         if (student.isPresent()) {
+            student.get().setResetToken(null);
+            studentRepository.save(student.get());
             return new ResponseEntity<>(student.map(this::convertToStudentDTO), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new APIResponse("No student found!"), HttpStatus.NOT_FOUND);
@@ -554,6 +598,8 @@ public class AuthService {
     public ResponseEntity<?> getTeacher(String email) {
         Optional<Teacher> teacher = teacherRepository.findByUserEmail(email);
         if (teacher.isPresent()) {
+            teacher.get().setResetToken(null);
+            teacherRepository.save(teacher.get());
             return new ResponseEntity<>(teacher.map(this::convertToTeacherDTO), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new APIResponse("No teacher found!"), HttpStatus.NOT_FOUND);
@@ -717,6 +763,8 @@ public class AuthService {
     public ResponseEntity<?> getTranslator(String email) {
         Optional<Translator> translator = translatorRepository.findByUserEmail(email);
         if (translator.isPresent()) {
+            translator.get().setResetToken(null);
+            translatorRepository.save(translator.get());
             return new ResponseEntity<>(translator.map(this::convertToTranslatorDTO), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new APIResponse("No translator found!"), HttpStatus.NOT_FOUND);
@@ -811,6 +859,8 @@ public class AuthService {
     public ResponseEntity<?> getResearcher(String email) {
         Optional<Researcher> researcher = researcherRepository.findByUserEmail(email);
         if (researcher.isPresent()) {
+            researcher.get().setResetToken(null);
+            researcherRepository.save(researcher.get());
             return new ResponseEntity<>(researcher.map(this::convertToResearchDTO), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new APIResponse("No researcher found!"), HttpStatus.NOT_FOUND);
