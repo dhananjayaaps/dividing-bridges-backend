@@ -31,6 +31,7 @@ public class Student{
     private String penpalEmail;
     private PenpalGroup penpalGroup;
     private String password;
+    private String resetToken;
     private String userFullName;
     @Enumerated(EnumType.STRING)
     private UserRole userRole;

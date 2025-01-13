@@ -1,6 +1,5 @@
 package org.penpal.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,8 +23,8 @@ public class Teacher {
     private String id;
     @Indexed(unique = true)
     private String userEmail;
-    @JsonIgnore
     private String userPassword;
+    private String resetToken;
     private String userFullName;
     @Enumerated(EnumType.STRING)
     private UserRole userRole;

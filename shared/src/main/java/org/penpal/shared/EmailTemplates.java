@@ -21,10 +21,11 @@ public class EmailTemplates {
 
     public static final String RESET_PASSWORD_BODY =
             "Dear User,\n\n" +
-                    "Your password has been successfully reset. Please use the temporary password below to log in to your account:\n\n" +
-                    "Temporary Password: %s\n\n" +
-                    "For security reasons, we recommend changing your password immediately after logging in.\n\n" +
-                    "If you did not request this password reset, please contact our support team immediately.\n\n" +
+                    "We received a request to reset your password. If you initiated this request, please click the link below to reset your password:\n\n" +
+                    "Reset Password Link: https://prod.com/reset-password\n\n" +
+                    "The link will expire in 30 minutes for security reasons.\n\n" +
+                    "If you did not request a password reset, please disregard this email. Your password will remain unchanged.\n\n" +
+                    "For further assistance, please contact our support team.\n\n" +
                     "Best regards,\n" +
                     "Bridging Divides Support Team";
 
