@@ -36,8 +36,6 @@ public class AuthService {
     private String INVITATION_SERVICE_HOSTED_URL;
     private final EmailValidator emailValidator;
     @Autowired
-    private TempPasswordGenerator tempPasswordGenerator;
-    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private JwtGenerator jwtGenerator;
@@ -324,7 +322,7 @@ public class AuthService {
                     INVITATION_SERVICE_HOSTED_URL+"api/invitations/filter", HttpMethod.POST, entity, Invitation[].class);
             if (Objects.requireNonNull(invitationResponseEntity.getBody()).length > 0) {
                 HttpEntity<Map<String, Object>> entityUpdate = new HttpEntity<>(null, headers);
-                ResponseEntity<Invitation> _ = restTemplate.exchange(
+                ResponseEntity<Invitation> res = restTemplate.exchange(
                         INVITATION_SERVICE_HOSTED_URL+"api/invitations/" + Objects.requireNonNull(invitationResponseEntity.getBody())[0].getId() + "/status",
                         HttpMethod.PUT, entityUpdate, Invitation.class);
             }

@@ -13,7 +13,7 @@ public class JwtGenerator {
     private String SECRET_KEY;
     public String generateToken(String email, String userRole){
         long currentTime = System.currentTimeMillis();
-        long expirationTime = currentTime + 1800000;
+        long expirationTime = currentTime + 3600000;
         email = email.replace("\"", "");
         userRole = userRole.replace("\"", "");
         return Jwts.builder()
