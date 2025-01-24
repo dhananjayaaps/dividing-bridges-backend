@@ -688,6 +688,7 @@ public class AuthService {
                 for (Teacher teacher : entry.getValue()) {
                     DistrictHierarchy.TeacherHierarchy teacherData = new DistrictHierarchy.TeacherHierarchy();
                     teacherData.setTeacherName(teacher.getUserFullName());
+                    teacherData.setAssignedClass(teacher.getAssignedClass());
 
                     if (!"STUDENT".equalsIgnoreCase(userRole)) {
                         List<Student> students = studentRepository.findByAssignedClass(teacher.getAssignedClass());

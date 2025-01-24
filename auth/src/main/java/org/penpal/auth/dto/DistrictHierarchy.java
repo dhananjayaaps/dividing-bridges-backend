@@ -28,6 +28,7 @@ public class DistrictHierarchy {
     @NoArgsConstructor
     public static class TeacherHierarchy {
         private String teacherName;
+        private String assignedClass;
         private List<StudentResponse> students = new ArrayList<>();
     }
 
