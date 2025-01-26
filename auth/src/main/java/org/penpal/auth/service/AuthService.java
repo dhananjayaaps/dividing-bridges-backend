@@ -516,6 +516,7 @@ public class AuthService {
         Optional<Student> existingStudent = studentRepository.findByUserEmail(email);
         if (existingStudent.isPresent()) {
             existingStudent.get().setAccountDeleteStatus(AccountDeleteStatus.PENDING);
+            studentRepository.save(existingStudent.get());
             return new ResponseEntity<>(new APIResponse("Student delete request successfully sent to the teacher"), HttpStatus.OK);
         }
         return new ResponseEntity<>(new APIResponse("Student not found!"), HttpStatus.NOT_FOUND);
