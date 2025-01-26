@@ -512,12 +512,12 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<?> sendStudentAccountDeleteRequest(String email) {
+    public ResponseEntity<?> updateStudentAccountDeleteRequest(String email, String status) {
         Optional<Student> existingStudent = studentRepository.findByUserEmail(email);
         if (existingStudent.isPresent()) {
-            existingStudent.get().setAccountDeleteStatus(AccountDeleteStatus.PENDING);
+            existingStudent.get().setAccountDeleteStatus(AccountDeleteStatus.valueOf(status));
             studentRepository.save(existingStudent.get());
-            return new ResponseEntity<>(new APIResponse("Student delete request successfully sent to the teacher"), HttpStatus.OK);
+            return new ResponseEntity<>(new APIResponse("Student delete request updated successfully"), HttpStatus.OK);
         }
         return new ResponseEntity<>(new APIResponse("Student not found!"), HttpStatus.NOT_FOUND);
     }

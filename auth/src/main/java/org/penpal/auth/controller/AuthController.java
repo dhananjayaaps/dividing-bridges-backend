@@ -124,8 +124,9 @@ public class AuthController {
 
     @PatchMapping(path = "/students/{email}/delete-account")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> sendStudentAccountDeleteRequest(@PathVariable("email") String email) {
-        return authService.sendStudentAccountDeleteRequest(email);
+    public ResponseEntity<?> updateStudentAccountDeleteRequest(
+            @PathVariable("email") String email, @RequestParam("status") String status) {
+        return authService.updateStudentAccountDeleteRequest(email, status);
     }
 
     @DeleteMapping(path = "/students/{email}")
