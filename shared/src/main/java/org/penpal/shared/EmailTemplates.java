@@ -22,7 +22,7 @@ public class EmailTemplates {
     public static final String RESET_PASSWORD_BODY =
             "Dear User,\n\n" +
                     "We received a request to reset your password. If you initiated this request, please click the link below to reset your password:\n\n" +
-                    "Reset Password Link: https://prod.com/reset-password\n\n" +
+                    "Reset Password Link: %s%sn\n" +
                     "The link will expire in 30 minutes for security reasons.\n\n" +
                     "If you did not request a password reset, please disregard this email. Your password will remain unchanged.\n\n" +
                     "For further assistance, please contact our support team.\n\n" +

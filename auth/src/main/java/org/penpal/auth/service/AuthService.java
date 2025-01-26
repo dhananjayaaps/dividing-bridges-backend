@@ -55,6 +55,8 @@ public class AuthService {
     private RestTemplate restTemplate;
     @Autowired
     private SchoolRepository schoolRepository;
+    @Value("${reset.pwd.url}")
+    private String RESET_PWD_HOSTED_URL;
 
     public AuthService(EmailValidator emailValidator) {
         this.emailValidator = emailValidator;
@@ -191,7 +193,7 @@ public class AuthService {
         EmailSendingPayload emailSendingPayload = new EmailSendingPayload();
         emailSendingPayload.setTo(email);
         emailSendingPayload.setSubject(EmailTemplates.RESET_PASSWORD_SUBJECT);
-        emailSendingPayload.setBody(String.format(EmailTemplates.RESET_PASSWORD_BODY));
+        emailSendingPayload.setBody(String.format(EmailTemplates.RESET_PASSWORD_BODY, RESET_PWD_HOSTED_URL, email));
         if (userRole.equals(UserRole.STUDENT.toString())) {
             Optional<Student> student = studentRepository.findByUserEmail(email);
             if (student.isPresent()) {
