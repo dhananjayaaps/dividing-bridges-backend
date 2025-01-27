@@ -92,7 +92,7 @@ public class AuthController {
 
     @PostMapping(path = "/students/filter")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> filterStudents(StudentFilter filter) {
+    public ResponseEntity<?> filterStudents(@RequestBody StudentFilter filter) {
         return authService.filterStudents(filter);
     }
 
