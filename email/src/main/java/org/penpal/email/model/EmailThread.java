@@ -22,6 +22,7 @@ import java.util.List;
 public class EmailThread {
     @Id
     private String threadId;
+    private String subject;
     private List<String> participants;
     private List<Message> messages;
     private LocalDateTime createdAt;

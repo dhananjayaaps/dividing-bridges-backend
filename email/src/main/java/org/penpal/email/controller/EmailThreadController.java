@@ -25,13 +25,14 @@ public class EmailThreadController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> createThread(
+            @RequestPart("subject") String subject,
             @RequestPart("sender") String sender,
             @RequestPart("recipient") String recipient,
             @RequestPart("body") String body,
             @RequestPart("language") String language,
             @RequestPart("type") String type,
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
-        return emailThreadService.createThread(sender, recipient, body, language, type, attachments);
+        return emailThreadService.createThread(subject, sender, recipient, body, language, type, attachments);
     }
 
     @GetMapping("")

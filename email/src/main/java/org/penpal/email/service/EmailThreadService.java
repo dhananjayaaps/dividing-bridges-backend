@@ -43,10 +43,11 @@ public class EmailThreadService {
     @Value("${auth.service.hosted.url}")
     private String AUTH_SERVICE_HOSTED_URL;
 
-    public ResponseEntity<?> createThread(String sender, String recipient, String body,
+    public ResponseEntity<?> createThread(String subject, String sender, String recipient, String body,
                                           String language, String type, List<MultipartFile> attachments) {
         EmailThread thread = new EmailThread();
         thread.setThreadId(UUID.randomUUID().toString());
+        thread.setSubject(subject);
         thread.setParticipants(List.of(sender, recipient));
         List<EmailThread.Message.Attachment> attachedAttachments = null;
         if (attachments != null && !attachments.isEmpty()) {
