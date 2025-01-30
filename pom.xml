@@ -16,6 +16,7 @@
         <module>email-sending</module>
         <module>api-gateway</module>
         <module>discovery-server</module>
+        <module>payment</module>
     </modules>
 
     <dependencyManagement>

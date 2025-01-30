@@ -766,7 +766,6 @@ public class AuthService {
         Optional<Translator> translator = translatorRepository.findByUserEmail(email);
         if (translator.isPresent()) {
             translator.get().setResetToken(null);
-            translatorRepository.save(translator.get());
             return new ResponseEntity<>(translator.map(this::convertToTranslatorDTO), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new APIResponse("No translator found!"), HttpStatus.NOT_FOUND);
@@ -862,7 +861,6 @@ public class AuthService {
         Optional<Researcher> researcher = researcherRepository.findByUserEmail(email);
         if (researcher.isPresent()) {
             researcher.get().setResetToken(null);
-            researcherRepository.save(researcher.get());
             return new ResponseEntity<>(researcher.map(this::convertToResearchDTO), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new APIResponse("No researcher found!"), HttpStatus.NOT_FOUND);
@@ -894,9 +892,9 @@ public class AuthService {
     }
 
     public ResponseEntity<?> deleteResearcher(String email) {
-        Optional<Translator> existingTeacher = translatorRepository.findByUserEmail(email);
-        if (existingTeacher.isPresent()) {
-            translatorRepository.delete(existingTeacher.get());
+        Optional<Researcher> existingResearcher = researcherRepository.findByUserEmail(email);
+        if (existingResearcher.isPresent()) {
+            researcherRepository.delete(existingResearcher.get());
             return new ResponseEntity<>(new APIResponse("Researcher deleted"), HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(new APIResponse("Researcher not found!"), HttpStatus.NOT_FOUND);
