@@ -43,9 +43,10 @@ public class EmailThread {
         private MessageType type;
         private List<Attachment> attachments;
         private ModerationRecord moderationRecord;
+        private String isDraft;
 
         public Message(String messageId, String sender, String body, MessageStatus status, LocalDateTime now,
-                       String language, MessageType type) {
+                       String language, MessageType type, String isDraft) {
             this.messageId = messageId;
             this.sender = sender;
             this.body = body;
@@ -53,6 +54,7 @@ public class EmailThread {
             this.sentAt = now;
             this.language = language;
             this.type = type;
+            this.isDraft = isDraft;
         }
 
         @Getter

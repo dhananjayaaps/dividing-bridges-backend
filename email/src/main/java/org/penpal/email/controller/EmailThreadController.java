@@ -1,7 +1,6 @@
 package org.penpal.email.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 import org.penpal.email.dto.MessageFilter;
 import org.penpal.email.dto.MessagePayload;
 import org.penpal.email.service.EmailThreadService;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,8 +31,9 @@ public class EmailThreadController {
             @RequestPart("body") String body,
             @RequestPart("language") String language,
             @RequestPart("type") String type,
+            @RequestPart("isDraft") String isDraft,
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
-        return emailThreadService.createThread(subject, sender, recipient, body, language, type, attachments);
+        return emailThreadService.createThread(subject, sender, recipient, body, language, type, isDraft, attachments);
     }
 
     @GetMapping("")
@@ -55,8 +56,9 @@ public class EmailThreadController {
             @RequestPart("body") String body,
             @RequestPart("type") String type,
             @RequestPart("language") String language,
+            @RequestPart("isDraft") String isDraft,
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) throws IOException {
-        return emailThreadService.addMessage(threadId, sender, body, type, language, attachments);
+        return emailThreadService.addMessage(threadId, sender, body, type, language, isDraft, attachments);
     }
 
     @PutMapping("/{threadId}/messages/{messageId}/moderate")

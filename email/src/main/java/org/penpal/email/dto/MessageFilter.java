@@ -12,4 +12,5 @@ public class MessageFilter {
     private String status;
     private String language;
     private String type;
+    private String isDraft;
 }

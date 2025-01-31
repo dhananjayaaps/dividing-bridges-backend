@@ -15,4 +15,5 @@ public class MessagePayload {
     private String body;
     private String language;
     private List<MultipartFile> attachments;
+    private String isDraft;
 }

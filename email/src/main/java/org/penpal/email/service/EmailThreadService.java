@@ -44,7 +44,7 @@ public class EmailThreadService {
     private String AUTH_SERVICE_HOSTED_URL;
 
     public ResponseEntity<?> createThread(String subject, String sender, String recipient, String body,
-                                          String language, String type, List<MultipartFile> attachments) {
+                                          String language, String type, String isDraft, List<MultipartFile> attachments) {
         EmailThread thread = new EmailThread();
         thread.setThreadId(UUID.randomUUID().toString());
         thread.setSubject(subject);
@@ -74,7 +74,8 @@ public class EmailThreadService {
                         MessageStatus.PENDING : MessageStatus.APPROVED,
                 LocalDateTime.now(),
                 language,
-                MessageType.valueOf(type)
+                MessageType.valueOf(type),
+                isDraft
         );
         initialMessage.setAttachments(attachedAttachments);
 
@@ -125,7 +126,7 @@ public class EmailThreadService {
 //    }
 
     public ResponseEntity<?> addMessage(String threadId, String sender, String body, String type,
-                                        String language, List<MultipartFile> attachments) throws IOException {
+                                        String language, String isDraft, List<MultipartFile> attachments) throws IOException {
         Optional<EmailThread> thread = emailThreadRepository.findByThreadId(threadId);
         if (thread.isPresent()) {
             EmailThread.Message message = new EmailThread.Message();
@@ -136,6 +137,7 @@ public class EmailThreadService {
                     MessageStatus.PENDING : MessageStatus.APPROVED);
             message.setSentAt(LocalDateTime.now());
             message.setLanguage(language);
+            message.setIsDraft(isDraft);
             message.setType(MessageType.valueOf(type));
 
             if (attachments != null && !attachments.isEmpty()) {
@@ -221,7 +223,8 @@ public class EmailThreadService {
                             (filter.getSender() == null || message.getSender().equals(filter.getSender())) &&
                                     (filter.getStatus() == null || message.getStatus().equals(MessageStatus.valueOf(filter.getStatus()))) &&
                                     (filter.getLanguage() == null || message.getLanguage().equals(filter.getLanguage())) &&
-                                    (filter.getType() == null || message.getType().equals(MessageType.valueOf(filter.getType())))
+                                    (filter.getType() == null || message.getType().equals(MessageType.valueOf(filter.getType()))) &&
+                                    (filter.getIsDraft() == null || message.getIsDraft().equals(filter.getIsDraft()))
                     )
                     .toList();
             return new ResponseEntity<List<EmailThread.Message>>(messages, HttpStatus.OK);
@@ -241,6 +244,9 @@ public class EmailThreadService {
                 }
                 if (messagePayload.getLanguage() != null) {
                     existingMessage.get().setLanguage(messagePayload.getLanguage());
+                }
+                if (messagePayload.getIsDraft() != null) {
+                    existingMessage.get().setIsDraft(messagePayload.getIsDraft());
                 }
             } else {
                 return new ResponseEntity<>(new APIResponse("Message not found!"), HttpStatus.NOT_FOUND);
