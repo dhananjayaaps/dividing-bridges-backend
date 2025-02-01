@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class InvitationFilter {
-    String senderEmail;
-    String receiverEmail;
-    String invitationStatus;
-    String userRole;
+public class AdminInvitationPayload {
+    private String senderEmail;
+    private String receiverEmail;
+    private String userRole;
 }

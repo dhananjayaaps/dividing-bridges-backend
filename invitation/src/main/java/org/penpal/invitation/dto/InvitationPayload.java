@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class InvitationPayload {
-    private String studentEmail;
-    private String teacherEmail;
+    private String senderEmail;
+    private String receiverEmail;
 }

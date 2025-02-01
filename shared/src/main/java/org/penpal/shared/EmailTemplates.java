@@ -9,8 +9,20 @@ public class EmailTemplates {
                     "- Exchange letters to share your culture and experiences.\n" +
                     "- Enhance your language and communication skills.\n\n" +
                     "**How to join**:\n" +
-                    "1. Visit [Platform URL].\n" +
+                    "1. Visit %s.\n" +
                     "2. Click \"Sign Up as a Student\".\n" +
+                    "3. Complete the registration form.\n\n" +
+                    "If you have any questions, feel free to contact me at %s.\n\n" +
+                    "Looking forward to seeing you on the platform!\n\n" +
+                    "Best regards,\n" +
+                    "%s";
+
+    public static final String ADMIN_INVITATION_BODY =
+            "Dear User,\n\n" +
+                    "I’m excited to invite you to join Bridging Divides, a platform designed to connect students across Sri Lanka and foster ethnic harmony.\n\n" +
+                    "**How to join**:\n" +
+                    "1. Visit %s.\n" +
+                    "2. Click \"Sign Up as a %s\".\n" +
                     "3. Complete the registration form.\n\n" +
                     "If you have any questions, feel free to contact me at %s.\n\n" +
                     "Looking forward to seeing you on the platform!\n\n" +

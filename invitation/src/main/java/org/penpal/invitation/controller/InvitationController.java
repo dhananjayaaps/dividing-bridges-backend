@@ -1,6 +1,7 @@
 package org.penpal.invitation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.penpal.invitation.dto.AdminInvitationPayload;
 import org.penpal.invitation.dto.InvitationFilter;
 import org.penpal.invitation.dto.InvitationPayload;
 import org.penpal.invitation.service.InvitationService;
@@ -51,5 +52,41 @@ public class InvitationController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> deleteInvitation(@PathVariable("id") String id) {
         return invitationService.deleteInvitation(id);
+    }
+
+    @PostMapping(path = "/admin")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> createAdminInvitation(@RequestBody AdminInvitationPayload invitationPayload) {
+        return invitationService.createAdminInvitation(invitationPayload);
+    }
+
+    @GetMapping(path = "/admin")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getAdminInvitations() {
+        return invitationService.getAdminInvitations();
+    }
+
+    @GetMapping(path = "/admin/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getAdminInvitation(@PathVariable("id") String id) {
+        return invitationService.getAdminInvitation(id);
+    }
+
+    @PostMapping(path = "/admin/filter")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> filterAdminInvitations(@RequestBody InvitationFilter invitationFilter) {
+        return invitationService.filterAdminInvitations(invitationFilter);
+    }
+
+    @PutMapping(path = "/admin/{id}/status")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> updateAdminInvitationStatus(@PathVariable("id") String id) {
+        return invitationService.updateAdminInvitationStatus(id);
+    }
+
+    @DeleteMapping(path = "/admin/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> deleteAdminInvitation(@PathVariable("id") String id) {
+        return invitationService.deleteAdminInvitation(id);
     }
 }
